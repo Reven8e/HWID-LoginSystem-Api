@@ -20,6 +20,5 @@ None
 
 
 ### ChangeLog:
-- Fixed Login.
-- Added HWID Reset.
-- AutoPrint HTTP Status Code in Response.
+- Added user delete option.
+- Added response function.

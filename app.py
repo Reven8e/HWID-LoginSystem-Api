@@ -15,6 +15,14 @@ def find(user):
     return user
 
 
+def response(code: int, message: str):
+    response = Response(
+            response=json.dumps({"status code": code, "message": message}),
+            status=code,
+            mimetype='application/json')
+    return response  
+
+
 app = Flask(__name__)
 app.secret_key = "sup"
 
@@ -22,23 +30,19 @@ app.secret_key = "sup"
 @app.route('/api/register/<string:admin_key>/<string:user>/<string:password>', methods=['POST', 'GET'])
 def create(user, password, admin_key):
     if admin_key != app.secret_key:
-        response = Response(
-                response=json.dumps({"status code": 401, "message": "Invalid access key!"}),
-                status=401,
-                mimetype='application/json')
-        return response
+        resp = response(401, "Invalid access key!")
+        return resp
+        
     try:
         USERS.insert_one({"_id": user, "password": password, "hwid": None})
-        response = Response(
+        resp = Response(
                 response=json.dumps({"status code": 201, "message": "Successfuly created", "user": {"user": user, "password": password, "hwid": None}}),
                 status=201,
                 mimetype='application/json')
     except errors.DuplicateKeyError:
-        response = Response(
-                response=json.dumps({"status code": 400, "message": "Username is already in use."}),
-                status=400,
-                mimetype='application/json')
-    return response
+        resp = response(400, "Username is already in use.")
+
+    return resp
 
 
 @app.route('/api/login/<string:user>/<string:password>/<string:hwid>', methods=['POST', 'GET'])
@@ -55,28 +59,18 @@ def login(user, password, hwid):
                 hwid_db = hwid
 
             if hwid_db == str(hwid):
-                response = Response(
-                        response=json.dumps({"status code": 200, "message": "Successfuly logged in."}),
-                        status=200,
-                        mimetype='application/json')
-                return response
+                resp = response(200, "Successfuly logged in.")
+                return resp
 
-    response = Response(
-            response=json.dumps({"status code": 401, "message": "User or password or hwid are inccorect."}),
-            status=401,
-            mimetype='application/json')
-
-    return response
+    resp = response(401, "Username or password or hwid are inccorect!")
+    return resp
 
 
 @app.route('/api/change-hwid/<string:admin_key>/<string:user>/<string:password>/<string:new_hwid>', methods=['PUT', 'GET'])
 def change_hwid(admin_key, user, password, new_hwid):
     if admin_key != app.secret_key:
-        response = Response(
-                response=json.dumps({"status code": 401, "message": "Invalid access key!"}),
-                status=401,
-                mimetype='application/json')
-        return response
+        resp = response(401, "Invalid access key!")
+        return resp
 
     usr = find(user)
     if usr is not None:
@@ -85,19 +79,29 @@ def change_hwid(admin_key, user, password, new_hwid):
         if passwd == str(password):
             after = {"$set": {"hwid": str(new_hwid)}}
             USERS.update_one(usr, after)
-            response = Response(
-                    response=json.dumps({"status code": 201, "message": "HWID has been successfuly updated."}),
-                    status=201,
-                    mimetype='application/json')
-            return response
+            resp = response(201, "HWID has been successfuly updated.")
+            return resp
 
-    response = Response(
-            response=json.dumps({"status code": 401, "message": "User or password are inccorect."}),
-            status=401,
-            mimetype='application/json')
+    resp = response(400, "User or password are inccorect.")
+    return resp
 
-    return response
 
+@app.route('/api/change-hwid/<string:admin_key>/<string:user>', methods=['DELETE', 'GET'])
+def delete_user(admin_key, user):
+    if admin_key != app.secret_key:
+        resp = response(401, "Invalid access key!")
+        return resp
+
+    usr = find(user)
+    if usr is not None:
+        USERS.delete_one(usr)
+        resp = response(201, f"Successfuly deleted {user}")
+        return resp
+
+    resp = response(400, f"{user} is not found!")
+    return resp
+    
+    
 
 if __name__ == "__main__":
     app.run(debug=True)
