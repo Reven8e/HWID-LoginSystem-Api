@@ -12,3 +12,7 @@ None
 #### Author: Reven8e.sh (Reven8e.sh#9290) | https://www.bogan.cool
 
 #### Educational Purposes Only!
+
+
+### Installation:
+- pip/3 install -r requirements.txt
