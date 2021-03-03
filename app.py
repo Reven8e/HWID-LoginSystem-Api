@@ -24,7 +24,7 @@ def response(code: int, message: str):
 
 
 app = Flask(__name__)
-app.secret_key = "sup"
+app.secret_key = "knfcadrqif"
 
 
 @app.route('/api/register/<string:admin_key>/<string:user>/<string:password>', methods=['POST', 'GET'])
@@ -32,7 +32,7 @@ def create(user, password, admin_key):
     if admin_key != app.secret_key:
         resp = response(401, "Invalid access key!")
         return resp
-        
+
     try:
         USERS.insert_one({"_id": user, "password": password, "hwid": None})
         resp = Response(
