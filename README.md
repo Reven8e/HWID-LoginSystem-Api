@@ -16,3 +16,10 @@ None
 
 ### Installation:
 - pip/3 install -r requirements.txt
+
+
+
+### ChangeLog:
+- Fixed Login.
+- Added HWID Reset.
+- AutoPrint HTTP Status Code in Response.
