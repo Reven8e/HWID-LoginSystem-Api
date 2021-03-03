@@ -1,0 +1,1 @@
+uri = "mongodb+srv://admin:12345t6789@cluster0.3gb6p.mongodb.net/auth?retryWrites=true&w=majority"
