@@ -66,7 +66,7 @@ def login(user, password, hwid):
     return resp
 
 
-@app.route('/api/change-hwid/<string:admin_key>/<string:user>/<string:password>/<string:new_hwid>', methods=['PUT', 'GET'])
+@app.route('/api/change-hwid/<string:admin_key>/<string:user>/<string:password>', methods=['PUT', 'GET'])
 def change_hwid(admin_key, user, password, new_hwid):
     if admin_key != app.secret_key:
         resp = response(401, "Invalid access key!")
@@ -77,7 +77,7 @@ def change_hwid(admin_key, user, password, new_hwid):
         passwd = usr["password"]
 
         if passwd == str(password):
-            after = {"$set": {"hwid": str(new_hwid)}}
+            after = {"$set": {"hwid": None}}
             USERS.update_one(usr, after)
             resp = response(201, "HWID has been successfuly updated.")
             return resp
@@ -86,7 +86,7 @@ def change_hwid(admin_key, user, password, new_hwid):
     return resp
 
 
-@app.route('/api/change-hwid/<string:admin_key>/<string:user>', methods=['DELETE', 'GET'])
+@app.route('/api/delete/<string:admin_key>/<string:user>', methods=['DELETE', 'GET'])
 def delete_user(admin_key, user):
     if admin_key != app.secret_key:
         resp = response(401, "Invalid access key!")
